@@ -71,14 +71,12 @@ var app = new Vue({
     },
     methods: {
         getSession: function (id, pass) {
-            return axios.post('get.php', {
-                table: 'tt_sessions',
-                query: {
-                    id: id,
-                    pass: pass
+            return axios.get(backendUrl + 'session', {
+                params: {
+                    'idpass': id + pass
                 }
             }).then((response) => {
-                if (response.data.length > 0) {
+                if (response.data) {
                     return response.data;
                 } else {
                     return false;
@@ -86,14 +84,12 @@ var app = new Vue({
             });
         },
         getMember: function (id, pass) {
-            return axios.post('get.php', {
-                table: 'tt_members',
-                query: {
-                    id: id,
-                    pass: pass
+            return axios.get(backendUrl + 'member', {
+                params: {
+                    'idpass': id + pass
                 }
             }).then((response) => {
-                if (response.data.length > 0) {
+                if (response.data) {
                     return response.data;
                 } else {
                     return false;
@@ -101,14 +97,12 @@ var app = new Vue({
             });
         },
         getLinks: function () {
-            return axios.post('get.php', {
-                table: 'tt_link',
-                query: {
-                    id: this.sessionData.id,
-                    pass: this.sessionData.pass
+            return axios.get(backendUrl + 'links', {
+                params: {
+                    'idpass': this.sessionData.id + this.sessionData.pass
                 }
             }).then((response) => {
-                if (response.data.length > 0) {
+                if (response.data) {
                     return response.data;
                 } else {
                     return false;
@@ -116,55 +110,40 @@ var app = new Vue({
             });
         },
         createSession: function () {
-            return axios.post('create.php', {
-                table: 'tt_sessions',
-                query: {
-                    'id': 'DEFAULT',
-                    'pass': generateRandomString(6),
-                    'data': JSON.stringify(this.sessionData.data),
-                },
+            return axios.post(backendUrl + 'session', {
+                pass: generateRandomString(6),
+                data: JSON.stringify(this.sessionData.data),
             }).then((response) => {
                 return response.data;
             });
         },
         createMember: function () {
-            return axios.post('create.php', {
-                table: 'tt_members',
-                query: {
-                    'id': 'DEFAULT',
-                    'pass': generateRandomString(6),
-                    'email': this.member.email,
-                    'phone': this.member.phone,
-                    'first_name': this.member.first_name,
-                    'last_name': this.member.last_name,
-                },
+            return axios.post(backendUrl + 'member', {
+                pass: generateRandomString(6),
+                email: this.member.email,
+                phone: this.member.phone,
+                first_name: this.member.first_name,
+                last_name: this.member.last_name,
             }).then((response) => {
                 return response.data;
             });
         },
         createLink: function () {
-            return axios.post('create.php', {
-                table: 'tt_link',
-                query: {
-                    'id': this.sessionData.id,
-                    'pass': this.sessionData.pass,
-                    'memberid': this.member.id,
-                    'linkid': 'DEFAULT',
-                    'name': this.member.first_name,
-                    'score': "0",
-                },
+            return axios.post(backendUrl + 'link', {
+                id: this.sessionData.id,
+                pass: this.sessionData.pass,
+                memberid: this.member.id,
+                name: this.member.first_name,
+                score: 0
             }).then((response) => {
                 return response.data;
             });
         },
         saveSession() {
-            axios.post('update.php', {
-                table: 'tt_sessions',
-                query: {
-                    'id': this.sessionData.id,
-                    'pass': this.sessionData.pass,
-                    'data': JSON.stringify(this.sessionData.data)
-                },
+            axios.post(backendUrl + 'session/update', {
+                id: this.sessionData.id,
+                pass: this.sessionData.pass,
+                data: JSON.stringify(this.sessionData.data)
             }).then((response) => {
                 if (response.data.response) {
                     this.saveSessionlocal();
@@ -172,16 +151,13 @@ var app = new Vue({
             });
         },
         saveMember() {
-            axios.post('update.php', {
-                table: 'tt_members',
-                query: {
-                    'id': this.member.id,
-                    'pass': this.member.pass,
-                    'email': this.member.email,
-                    'phone': this.member.phone,
-                    'first_name': this.member.first_name,
-                    'last_name': this.member.last_name,
-                },
+            axios.post(backendUrl + 'member/update', {
+                id: this.member.id,
+                pass: this.member.pass,
+                email: this.member.email,
+                phone: this.member.phone,
+                first_name: this.member.first_name,
+                last_name: this.member.last_name,
             }).then((response) => {
                 if (response.data.response) {
                     if (this.memberinlink !== false) {
@@ -193,17 +169,13 @@ var app = new Vue({
                 }
             });
         },
-        saveMyLink(memberid) {
-            var i = this.getIndexById(memberid);
-            axios.post('update.php', {
-                table: 'tt_link',
-                query: {
-                    'id': this.sessionData.id,
-                    'pass': this.sessionData.pass,
-                    'memberid': this.member.id,
-                    'name': this.member.first_name,
-                    'score': this.links[i].score == 0 ? "0" : this.links[i].score
-                },
+        saveMyLink() {
+            axios.post(backendUrl + 'link/update', {
+                id: this.sessionData.id,
+                pass: this.sessionData.pass,
+                memberid: this.member.id,
+                name: this.member.first_name,
+                score: this.links[i].score == 0 ? "0" : this.links[i].score
             }).then((response) => {
                 if (response.data.response) {
                     this.get(this.sessionData.teamid);
@@ -223,13 +195,10 @@ var app = new Vue({
             localStorage.setItem('tt_member', parsed);
         },
         deleteLink(linkid) {
-            return axios.post('delete.php', {
-                table: 'tt_link',
-                query: {
-                    id: this.sessionData.id,
-                    pass: this.sessionData.pass,
-                    linkid: linkid
-                }
+            return axios.post(backendUrl + 'link/delete', {
+                id: this.sessionData.id,
+                pass: this.sessionData.pass,
+                linkid: linkid
             }).then((response) => {
                 return response.data.response;
             });
@@ -255,9 +224,9 @@ var app = new Vue({
         get: function (teamid) {
             this.getSession(teamid.slice(0, -6), teamid.slice(-6)).then((data) => {
                 if (data != false) {
-                    this.sessionData.id = data[0].id;
-                    this.sessionData.pass = data[0].pass;
-                    this.sessionData.data = JSON.parse(data[0].data);
+                    this.sessionData.id = data.id;
+                    this.sessionData.pass = data.pass;
+                    this.sessionData.data = JSON.parse(data.data);
                     this.login = true;
                     this.incorrect = false;
                     this.saveSessionlocal();
@@ -287,12 +256,12 @@ var app = new Vue({
         getM: function (memberid) {
             this.getSession(memberid.slice(0, -6), memberid.slice(-6)).then((data) => {
                 if (data != false) {
-                    this.member.id = data[0].id;
-                    this.member.pass = data[0].pass;
-                    this.member.email = data[0].email;
-                    this.member.phone = data[0].phone;
-                    this.member.first_name = data[0].first_name;
-                    this.member.last_name = data[0].last_name;
+                    this.member.id = data.id;
+                    this.member.pass = data.pass;
+                    this.member.email = data.email;
+                    this.member.phone = data.phone;
+                    this.member.first_name = data.first_name;
+                    this.member.last_name = data.last_name;
                     this.saveSessionlocal();
                 } else {
 
@@ -475,14 +444,6 @@ var app = new Vue({
             }
             this.getM(this.member.memberid);
         }
-        /*for(var i = 0; i < this.words.length; i++){
-            var count = 0;
-            for(var j = 0; j < this.words.length; j++){
-                count += this.words[i] == this.words[j] ? 1 : 0; 
-                if(count > 1)
-                console.log(this.words[i])
-            }
-        }*/
     },
     computed: {
         link: function () {
@@ -549,46 +510,30 @@ function getParams() {
     }
 }
 (function () {
-    /**
-     * Корректировка округления десятичных дробей.
-     *
-     * @param {String}  type  Тип корректировки.
-     * @param {Number}  value Число.
-     * @param {Integer} exp   Показатель степени (десятичный логарифм основания корректировки).
-     * @returns {Number} Скорректированное значение.
-     */
     function decimalAdjust(type, value, exp) {
-        // Если степень не определена, либо равна нулю...
         if (typeof exp === 'undefined' || +exp === 0) {
             return Math[type](value);
         }
         value = +value;
         exp = +exp;
-        // Если значение не является числом, либо степень не является целым числом...
         if (isNaN(value) || !(typeof exp === 'number' && exp % 1 === 0)) {
             return NaN;
         }
-        // Сдвиг разрядов
         value = value.toString().split('e');
         value = Math[type](+(value[0] + 'e' + (value[1] ? (+value[1] - exp) : -exp)));
-        // Обратный сдвиг
         value = value.toString().split('e');
         return +(value[0] + 'e' + (value[1] ? (+value[1] + exp) : exp));
     }
-
-    // Десятичное округление к ближайшему
     if (!Math.round10) {
         Math.round10 = function (value, exp) {
             return decimalAdjust('round', value, exp);
         };
     }
-    // Десятичное округление вниз
     if (!Math.floor10) {
         Math.floor10 = function (value, exp) {
             return decimalAdjust('floor', value, exp);
         };
     }
-    // Десятичное округление вверх
     if (!Math.ceil10) {
         Math.ceil10 = function (value, exp) {
             return decimalAdjust('ceil', value, exp);

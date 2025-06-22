@@ -1,0 +1,14 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "tic-tac-boom-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-06-22",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "tic-tac-boom-db",
+      "database_id": "e9752f5a-d6ba-461b-90f0-cbd846f3798e",
+      "migrations_dir": "migrations"
+    }
+  ]
+}
