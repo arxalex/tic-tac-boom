@@ -39,6 +39,7 @@ Vue.component('member', {
     },
 });
 const backendUrl = 'https://tic-tac-boom-api.arxalex.com/';
+const timeout = 1000;
 var app = new Vue({
     el: '#page-wrapper',
     data: {
@@ -416,8 +417,8 @@ var app = new Vue({
                 if (this.login) {
                     this.get(this.sessionData.teamid);
                 }
-            }, 100)
-        }, 100);
+            }, timeout)
+        }, timeout);
         setTimeout(() => {
 
             let timerId = setInterval(() => {
@@ -430,8 +431,8 @@ var app = new Vue({
                         this.dead(this.member.id);
                     }
                 }
-            }, 110)
-        }, 100);
+            }, timeout)
+        }, timeout);
         var params = getParams();
         if (params.teamid != null) {
             this.sessionData = {
