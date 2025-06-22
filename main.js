@@ -38,6 +38,7 @@ Vue.component('member', {
 
     },
 });
+const backendUrl = 'https://tic-tac-boom-api.arxalex.com/';
 var app = new Vue({
     el: '#page-wrapper',
     data: {
