@@ -371,7 +371,7 @@ var app = new Vue({
                     var temp = (now - end) / 2000 * 12;
                     cf = Math.floor10(temp) + 12;
                 }
-                return "boom/boom_00" + ((30 - cf) >= 10 ? "" : "0") + (30 - cf) + "_Слой-" + cf + ".png";
+                return `boom/frame_$(cf).png`;
             } else {
                 return -1;
             }
@@ -425,7 +425,7 @@ var app = new Vue({
                 if (this.login && this.sessionData.data.play) {
                     var boomgif = document.getElementById("boom");
                     /*var boomtime = document.getElementById("time");*/
-                    boomgif.src = this.cur_frame() != -1 ? this.cur_frame() : "boom/boom_0000_Слой-30.png";
+                    boomgif.src = this.cur_frame() != -1 ? this.cur_frame() : "boom/frame_30.png";
                     /*boomtime.innerHTML = this.time_left() != -1 ? this.time_left() : "00:00:00";*/
                     if (this.time_left() == -1 && this.sessionData.data.player == this.member.id && this.sessionData.data.play) {
                         this.dead(this.member.id);
