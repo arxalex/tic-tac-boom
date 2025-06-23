@@ -88,7 +88,7 @@ app.post('/member', async (c) => {
   }
 
   const query = `insert into ${tables.members} (pass, email, phone, first_name, last_name) values (?, ?, ?, ?, ?) RETURNING id`;
-  const result = await c.env.DB.prepare(query).bind(data.pass, data.email, data.phone, data.first_name, data.last_name).run();
+  const result = await c.env.DB.prepare(query).bind(data.pass, data.email ?? null, data.phone ?? null, data.first_name ?? null, data.last_name ?? null).run();
   return c.json({
     id: result.results[0].id,
     pass: data.pass,
@@ -102,7 +102,7 @@ app.post('/link', async (c) => {
   }
 
   const query = `insert into ${tables.links} (id, pass, memberid, name, score) values (?, ?, ?, ?, ?) RETURNING linkid`;
-  const result = await c.env.DB.prepare(query).bind(data.id, data.pass, data.memberid, data.name, data.score).run();
+  const result = await c.env.DB.prepare(query).bind(data.id, data.pass, data.memberid, data.name, data.score ?? null).run();
   return c.json({
     id: result.results[0].linkid,
     pass: data.pass,
@@ -128,7 +128,7 @@ app.post('/member/update', async (c) => {
   }
 
   const query = `update ${tables.members} set email = ?, phone = ?, first_name = ?, last_name = ? where id = ? and pass = ?`;
-  const result = await c.env.DB.prepare(query).bind(data.email, data.phone, data.first_name, data.last_name, data.id, data.pass).run();
+  const result = await c.env.DB.prepare(query).bind(data.email ?? null, data.phone ?? null, data.first_name ?? null, data.last_name ?? null, data.id, data.pass).run();
   return c.json({
     response: result.success
   })
@@ -140,7 +140,7 @@ app.post('/link/update', async (c) => {
   }
 
   const query = `update ${tables.members} set memberid = ?, name = ?, score = ? where id = ? and pass = ? and linkid = ?`;
-  const result = await c.env.DB.prepare(query).bind(data.memberid, data.name, data.score, data.id, data.pass, data.linkid).run();
+  const result = await c.env.DB.prepare(query).bind(data.memberid, data.name, data.score ?? null, data.id, data.pass, data.linkid).run();
   return c.json({
     response: result.success
   })
